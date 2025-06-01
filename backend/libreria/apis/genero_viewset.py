@@ -1,0 +1,16 @@
+from rest_framework import serializers, viewsets
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+
+from libreria.models import Genero
+
+
+class GeneroSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genero
+        fields = '__all__'
+
+
+class GeneroViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    queryset = Genero.objects.all()
+    serializer_class = LibroSerializer
