@@ -10,3 +10,8 @@ class Carrito(models.Model):
 
     def __str__(self):
         return f"Carrito {self.id} - Libro: {self.libro.titulo} "
+
+    class Meta:
+        permissions = [
+            ("add_libro_carrito", "Can add libro to carrito"),
+        ]

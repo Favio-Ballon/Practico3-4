@@ -9,3 +9,4 @@ class Libro(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     imagen = models.ImageField(upload_to='libros/')
     genero = models.ManyToManyField('libreria.Genero', related_name='libros')
+    ventas = models.IntegerField(default=0)

@@ -24,6 +24,6 @@ urlpatterns = [
 
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('universidad/', include("libreria.urls"))
+    path('libreria/', include("libreria.urls"))
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

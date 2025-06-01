@@ -10,67 +10,15 @@ class Migration(migrations.Migration):
     ]
 
     def insertData(self, schema_editor):
-        User = self.get_model('auth', 'User')
         Group = self.get_model('auth', 'Group')
-        Permission = self.get_model('auth', 'Permission')
 
-        # Create groups and assign permissions
-        administrador, _ = Group.objects.get_or_create(name="Administrador")
-        cliente, _ = Group.objects.get_or_create(name="Cliente")
+        administrador = Group(name="Administrador")
+        administrador.save()
 
-        user_view = Permission.objects.get(codename='view_user')
-        user_create = Permission.objects.get(codename='add_user')
-        user_update = Permission.objects.get(codename='change_user')
-        user_delete = Permission.objects.get(codename='delete_user')
-
-        carrito_view = Permission.objects.get(codename='view_carrito')
-        carrito_create = Permission.objects.get(codename='add_carrito')
-        carrito_update = Permission.objects.get(codename='change_carrito')
-        carrito_delete = Permission.objects.get(codename='delete_carrito')
-
-        compra_view = Permission.objects.get(codename='view_compra')
-        compra_create = Permission.objects.get(codename='add_compra')
-        compra_update = Permission.objects.get(codename='change_compra')
-        compra_delete = Permission.objects.get(codename='delete_compra')
-
-        genero_view = Permission.objects.get(codename='view_genero')
-        genero_create = Permission.objects.get(codename='add_genero')
-        genero_update = Permission.objects.get(codename='change_genero')
-        genero_delete = Permission.objects.get(codename='delete_genero')
-
-        libro_view = Permission.objects.get(codename='view_libro')
-        libro_create = Permission.objects.get(codename='add_libro')
-        libro_update = Permission.objects.get(codename='change_libro')
-        libro_delete = Permission.objects.get(codename='delete_libro')
-
-        cliente.permissions.set([
-            user_update, carrito_view, carrito_create, carrito_update, carrito_delete, compra_create, compra_view,
-            genero_view, libro_view
-        ])
-
-        administrador.permissions.set([
-            user_view, user_create, carrito_view, carrito_create, carrito_update, carrito_delete,
-            compra_view, compra_create, genero_view, genero_create, genero_update, genero_delete,
-            libro_view, libro_create, libro_update, libro_delete
-        ])
-
-        try:
-            admin_user = User.objects.get(username='admin')
-        except User.DoesNotExist:
-            admin_user = User.objects.create_user(
-                username='admin',
-                password='123456789',
-                email='admin@admin.com'
-            )
-            admin_user.is_superuser = True
-            admin_user.is_staff = True
-            admin_user.save()
-
-        admin_group = Group.objects.get(name='Administrador')
-        admin_user.groups.add(admin_group)
+        cliente = Group(name="Cliente")
+        cliente.save()
 
 
     operations = [
         migrations.RunPython(insertData, atomic=True),
     ]
-

@@ -1,7 +1,7 @@
 from rest_framework import serializers, viewsets
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 
-from libreria.models import Compra
+from libreria.models import Compra, Carrito
 
 
 class CompraSerializer(serializers.ModelSerializer):
@@ -14,3 +14,5 @@ class CompraViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
     queryset = Compra.objects.all()
     serializer_class = CompraSerializer
+
+

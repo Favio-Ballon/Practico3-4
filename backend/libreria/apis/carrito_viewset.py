@@ -1,7 +1,10 @@
+from django.utils import timezone
 from rest_framework import serializers, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+from rest_framework.response import Response
 
-from libreria.models import Carrito
+from libreria.models import Carrito, Libro, Compra
 
 
 class CarritoSerializer(serializers.ModelSerializer):
@@ -14,3 +17,72 @@ class CarritoViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
     queryset = Carrito.objects.all()
     serializer_class = CarritoSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Carrito.objects.filter(usuario=user)
+
+    @action(detail=True, methods=['post'], url_path='addlibro')
+    def add_libro(self, request, pk):
+        carrito = self.get_object()
+        libro_id = request.data.get('libro_id')
+        if not libro_id:
+            return Response({'error': 'El ID del libro es requerido'}, status=400)
+
+        try:
+            libro = Libro.objects.get(id=libro_id)
+            if libro in carrito.libros.all():
+                return Response({'error': 'El libro ya está en el carrito'}, status=400)
+            carrito.libros.add(libro)
+            carrito.precio_total += libro.precio
+            carrito.save()
+            return Response({'status': 'Libro añadido al carrito'}, status=200)
+        except Carrito.DoesNotExist:
+            return Response({'error': 'Carrito no encontrado'}, status=404)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
+    @action(detail=True, methods=['post'], url_path='removelibro')
+    def remove_libro(self, request, pk):
+        carrito = self.get_object()
+        libro_id = request.data.get('libro_id')
+        if not libro_id:
+            return Response({'error': 'El ID del libro es requerido'}, status=400)
+
+        try:
+            libro = Libro.objects.get(id=libro_id)
+            if libro not in carrito.libros.all():
+                return Response({'error': 'El libro no está en el carrito'}, status=400)
+            carrito.libros.remove(libro)
+            carrito.precio_total -= libro.precio
+            carrito.save()
+            return Response({'status': 'Libro eliminado del carrito'}, status=200)
+        except Carrito.DoesNotExist:
+            return Response({'error': 'Carrito no encontrado'}, status=404)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
+#     realizar compra
+    @action(detail=True, methods=['post'], url_path='comprar')
+    def comprar(self, request, pk):
+        carrito = self.get_object()
+        if not carrito.libros.exists():
+            return Response({'error': 'El carrito está vacío'}, status=400)
+
+
+        compra = Compra.objects.create(
+            usuario=request.user,
+            fecha = timezone.now(),
+            total=carrito.precio_total,
+        )
+        compra.libro.set(carrito.libros.all())
+        # agregar una venta a cada libro en el carrito
+        for libro in carrito.libros.all():
+            libro.ventas += 1
+            libro.save()
+        compra.save()
+        # Por simplicidad, solo vaciaremos el carrito y retornaremos un mensaje de éxito.
+        carrito.libros.clear()
+        carrito.precio_total = 0.00
+        carrito.save()
+        return Response({'status': 'Compra realizada con éxito'}, status=200)
