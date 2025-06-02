@@ -7,6 +7,8 @@ import { LibroService } from "../services/LibroService";
 import { useAppSelector } from "../redux/hooks";
 import { useNavigate, useParams } from "react-router";
 import { URLS } from "../navigation/CONSTANTS";
+import { CarritoService } from "../services/CarritoService";
+import { Carrito } from "../models/Carrito";
 
 export const LibroDetalle = () => {
   const [book, setBook] = useState<Libro | null>(null);
@@ -20,6 +22,12 @@ export const LibroDetalle = () => {
   const first_name = useAppSelector((state) => state.auth.first_name);
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const carrito = useState<Carrito>({
+    id: 0,
+    usuario: 0,
+    libros: [],
+    precio_total: "0",
+  })[0];
   
   useEffect(() => {
     if (first_name) {
@@ -32,8 +40,32 @@ export const LibroDetalle = () => {
   useEffect(() => {
     if (id) {
     getLibroById();
+    if (isAuthenticated) {
+      console.log("User is authenticated, fetching cart details");
+      getCarrito();
+    }
     }
   }, [id]);
+
+  const getCarrito = async () => {
+    if (!isAuthenticated) {
+      console.log("User is not authenticated, skipping cart fetch");
+      return;
+    }
+    try {
+      const response = await new CarritoService().getCarritos();
+      if (response.length > 0) {
+        const userCart = response[0];
+        setIsInCart(userCart.libros.some(libroId => libroId === Number(id)));
+        console.log("Carrito fetched successfully:", userCart);
+      } else {
+        console.log("No carrito found for the user");
+      }
+    } catch (error) {
+      console.error("Error fetching carrito:", error);
+      setError("Failed to fetch cart details");
+    }
+  };
 
 const getLibroById = async () => {
   try {
@@ -70,7 +102,30 @@ const getLibroById = async () => {
       setShowModal(true);
       return;
     }
-    setIsInCart(!isInCart);
+    if (isInCart) {
+      new CarritoService().removeLibroFromCarrito(book.id + "").then(() => {
+      console.log(`Libro with id ${book.id} removed from cart`);
+      setIsInCart(false);
+      if (isAuthenticated){
+      getCarrito(); // Refresh cart state
+      }
+    }
+    ).catch((error) => {
+      console.error("Error removing libro from cart:", error);
+      alert("Error removing book from cart. Please try again later.");
+    }
+    );
+
+    }else{
+    new CarritoService().addLibroToCarrito(book.id + "").then(() => {
+      console.log(`Libro with id ${book.id} added to cart`);
+      setIsInCart(true);
+      navigate(URLS.CARRITO);
+    }).catch((error) => {
+      console.error("Error adding libro to cart:", error);
+      alert("Error adding book to cart. Please try again later.");
+    });
+  }
   };
 
   return (
@@ -89,7 +144,13 @@ const getLibroById = async () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="relative group">
             <img
-              src={book.imagen}
+              src={
+                typeof book.imagen === "string"
+                  ? book.imagen
+                  : book.imagen instanceof File
+                  ? URL.createObjectURL(book.imagen)
+                  : undefined
+              }
               alt={book.titulo}
               className="w-full rounded-lg shadow-lg transition-transform group-hover:scale-105"
               loading="lazy"
@@ -104,12 +165,14 @@ const getLibroById = async () => {
             <div className="prose max-w-none">
               <p className="text-body text-foreground">
                 {expanded ? book.descripcion : `${book.descripcion.slice(0, 200)}...`}
+                {book.descripcion.length > 200 && (
                 <button
                   onClick={() => setExpanded(!expanded)}
                   className="text-primary ml-2 hover:underline focus:outline-none"
                 >
                   {expanded ? "Read Less" : "Read More"}
                 </button>
+                )}
               </p>
             </div>
 

@@ -33,7 +33,10 @@ export const useAuth = () => {
   useEffect(() => {
     new AuthService().me().then((response) => {
       if (response.email) {
-        console.log("User is logged in with email:", response.email);
+        console.log("User is logged in with email:", response);
+        if (window.location.href.includes("admin") && !response.is_staff) {
+          window.location.href = "/";
+        }
         dispatch(
           loginUser({
             email: response.email,

@@ -5,7 +5,7 @@ export interface Libro {
     descripcion: string;
     isbn: string;
     precio: string;
-    imagen: string;
+    imagen: string | File;
     ventas: number;
     genero: number[];
 }

@@ -29,8 +29,27 @@ export class LibroService {
 
   insertLibro(libro: Libro): Promise<Libro> {
     return new Promise<Libro>((resolve, reject) => {
+      const formData = new FormData();
+      formData.append("titulo", libro.titulo);
+      formData.append("autor", libro.autor);
+      formData.append("descripcion", libro.descripcion);
+      formData.append("isbn", libro.isbn);
+      formData.append("precio", libro.precio);
+      if (libro.imagen instanceof File) {
+        formData.append("imagen", libro.imagen);
+      } else {
+        formData.append("imagen", libro.imagen as string);
+      }
+      formData.append("ventas", libro.ventas.toString());
+      (libro.genero as number[]).forEach((id) => {
+        formData.append("genero", String(id));
+      });
       apiClient
-        .post("libros/", libro)
+        .post("libros/", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then((response) => {
           resolve(response.data);
         })
@@ -41,8 +60,25 @@ export class LibroService {
   }
   updateLibro(libro: Libro): Promise<Libro> {
     return new Promise<Libro>((resolve, reject) => {
+      const formData = new FormData();
+      formData.append("titulo", libro.titulo);
+      formData.append("autor", libro.autor);
+      formData.append("descripcion", libro.descripcion);
+      formData.append("isbn", libro.isbn);
+      formData.append("precio", libro.precio);
+      if (libro.imagen instanceof File) {
+        formData.append("imagen", libro.imagen);
+      }
+      formData.append("ventas", libro.ventas.toString());
+      (libro.genero as number[]).forEach((id) => {
+        formData.append("genero", String(id));
+      });
       apiClient
-        .put("libros/" + libro.id + "/")
+        .patch("libros/" + libro.id + "/", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then((response) => {
           resolve(response.data);
         })

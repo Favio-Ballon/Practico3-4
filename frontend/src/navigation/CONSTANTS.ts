@@ -2,14 +2,19 @@ export const URLS = {
   HOME: "/",
   LOGIN: "/login",
   REGISTER: "/register",
-  ADMIN: "/admin",
+  ADMIN: {
+    GENEROS: "/admin/generos",
+    LIBROS: "/admin/libros",
+    VENTAS: "/admin/ventas",
+    USUARIOS: "/admin/usuarios",
+  },
+  CARRITO: "/carrito",
+  COMPRA: {
+    LIST: "/compras",
+    DETALLECOMPRA: "/compras/:id/detalle",
+    COMPRAUSER: "/compras/user/",
+  },
   GENEROS: {
-    LIST: "/generos",
-    CREATE: "/generos/create",
-    EDIT: "/generos/:id",
-    UPDATE: (id: string) => {
-      return `/generos/${id}`;
-    },
     GENEROLIBROS: "/generos/:id/libros",
   },
   LIBROS: {

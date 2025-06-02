@@ -60,7 +60,7 @@ export class GeneroService {
   updateGenero(genero: Genero): Promise<Genero> {
     return new Promise<Genero>((resolve, reject) => {
       apiClient
-        .put("generos/" + genero.id + "/")
+        .put("generos/" + genero.id + "/", genero)
         .then((response) => {
           resolve(response.data);
         })
