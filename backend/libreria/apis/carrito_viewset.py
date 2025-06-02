@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.response import Response
 
+from libreria.apis.libro_viewset import LibroSerializer
 from libreria.models import Carrito, Libro, Compra
 
 
@@ -22,9 +23,9 @@ class CarritoViewSet(viewsets.ModelViewSet):
         user = self.request.user
         return Carrito.objects.filter(usuario=user)
 
-    @action(detail=True, methods=['post'], url_path='addlibro')
-    def add_libro(self, request, pk):
-        carrito = self.get_object()
+    @action(detail=False, methods=['post'], url_path='addlibro')
+    def add_libro(self, request):
+        carrito = Carrito.objects.filter(usuario=request.user).first()
         libro_id = request.data.get('libro_id')
         if not libro_id:
             return Response({'error': 'El ID del libro es requerido'}, status=400)
@@ -42,9 +43,9 @@ class CarritoViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'error': str(e)}, status=500)
 
-    @action(detail=True, methods=['post'], url_path='removelibro')
-    def remove_libro(self, request, pk):
-        carrito = self.get_object()
+    @action(detail=False, methods=['post'], url_path='removelibro')
+    def remove_libro(self, request):
+        carrito = Carrito.objects.filter(usuario=request.user).first()
         libro_id = request.data.get('libro_id')
         if not libro_id:
             return Response({'error': 'El ID del libro es requerido'}, status=400)
@@ -63,17 +64,20 @@ class CarritoViewSet(viewsets.ModelViewSet):
             return Response({'error': str(e)}, status=500)
 
 #     realizar compra
-    @action(detail=True, methods=['post'], url_path='comprar')
-    def comprar(self, request, pk):
-        carrito = self.get_object()
+    @action(detail=False, methods=['post'], url_path='comprar')
+    def comprar(self, request):
+        carrito = Carrito.objects.filter(usuario=request.user).first()
         if not carrito.libros.exists():
             return Response({'error': 'El carrito está vacío'}, status=400)
-
+        comprobante_pago = request.FILES.get('comprobante_pago')
+        if not comprobante_pago:
+            return Response({'error': 'El comprobante de pago es requerido'}, status=400)
 
         compra = Compra.objects.create(
             usuario=request.user,
             fecha = timezone.now(),
             total=carrito.precio_total,
+            comprobante_pago=comprobante_pago
         )
         compra.libro.set(carrito.libros.all())
         # agregar una venta a cada libro en el carrito
@@ -85,4 +89,14 @@ class CarritoViewSet(viewsets.ModelViewSet):
         carrito.libros.clear()
         carrito.precio_total = 0.00
         carrito.save()
-        return Response({'status': 'Compra realizada con éxito'}, status=200)
+        return Response({'id': compra.id}, status=200)
+
+    @action(detail=False, methods=['get'], url_path='libros')
+    def get_libros(self, request):
+        carrito = Carrito.objects.filter(usuario=request.user).first()
+        if not carrito:
+            return Response({'error': 'Carrito no encontrado'}, status=404)
+
+        libros = carrito.libros.all()
+        serializer = LibroSerializer(libros, many=True)
+        return Response(serializer.data, status=200)

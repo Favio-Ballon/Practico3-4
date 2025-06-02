@@ -19,5 +19,6 @@ class LibroViewSet(viewsets.ModelViewSet):
     queryset = Libro.objects.all()
     serializer_class = LibroSerializer
 
+
     def get_queryset(self):
         return Libro.objects.order_by('-ventas')

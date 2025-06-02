@@ -20,6 +20,15 @@ class UserViewSet(viewsets.ViewSet):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
+    @action(methods=['get'], detail=False, url_path='all')
+    def get_all_users(self, request):
+        if not request.user.is_staff:
+            return Response({'error': 'No tienes permiso para ver todos los usuarios'}, status=403)
+
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
 class AuthViewSet(viewsets.ViewSet):
 
     @action(methods=['post'], detail=False, url_path='register')
@@ -43,3 +52,4 @@ class AuthViewSet(viewsets.ViewSet):
         carrito = Carrito.objects.create(usuario=user)
         carrito.save()
         return Response({'id': user.id, 'email': user.email}, status=201)
+
