@@ -34,7 +34,7 @@ export const Header = () => {
     <header className="sticky top-0 z-50 bg-card dark:bg-gray-800 shadow-sm">
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <div className="text-2xl font-bold text-primary">BookStore</div>
+          <div className="text-2xl font-bold text-primary">Paragon</div>
           <div className="hidden md:flex items-center space-x-6">
             {
             (first_name && last_name) || is_staff ? (

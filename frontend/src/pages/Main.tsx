@@ -87,7 +87,7 @@ export const Main = () => {
       <div className="p-4">
         <h3 className="text-lg font-bold text-foreground dark:text-white">{libro.titulo}</h3>
         <p className="text-accent dark:text-gray-400">{libro.autor}</p>
-        <p className="mt-2 text-primary font-bold">${libro.precio}</p>
+        <p className="mt-2 text-primary font-bold">{libro.precio} Bs</p>
       </div>
     </div>
   );

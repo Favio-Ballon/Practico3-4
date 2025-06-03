@@ -45,6 +45,11 @@ export const useAuth = () => {
             last_name: response.last_name,
           })
         );
+      } else {
+        console.log("User is not logged in");
+        if (window.location.href.includes("admin")) {
+          window.location.href = "/";
+        }
       }
     });
   }, []);

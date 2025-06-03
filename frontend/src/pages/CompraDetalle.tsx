@@ -52,7 +52,7 @@ export const DetalleCompra = () => {
           </p>
           <p>
             <span className="font-semibold text-accent-foreground">Total:</span>{" "}
-            <span className="text-primary font-bold text-lg">${compra.total}</span>
+            <span className="text-primary font-bold text-lg">{compra.total} Bs</span>
           </p>
         </div>
 
@@ -91,7 +91,7 @@ export const DetalleCompra = () => {
                 <div className="space-y-1">
                   <p className="font-semibold text-foreground">{libro.titulo}</p>
                   <p className="text-sm text-accent">{libro.autor}</p>
-                  <p className="text-primary font-bold">${libro.precio}</p>
+                  <p className="text-primary font-bold">{libro.precio} Bs</p>
                 </div>
               </div>
             ))}

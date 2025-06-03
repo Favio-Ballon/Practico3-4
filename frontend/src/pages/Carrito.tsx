@@ -118,7 +118,7 @@ const confirmarPago = () => {
                   <div className="flex-grow">
                     <h3 className="font-heading text-lg text-foreground">{item.titulo}</h3>
                     <p className="text-accent">{item.autor}</p>
-                    <p className="text-primary font-semibold mt-2">${item.precio}</p>
+                    <p className="text-primary font-semibold mt-2">{item.precio} Bs</p>
                   </div>
                   <div className="flex flex-col gap-2">
                     <button
@@ -135,20 +135,20 @@ const confirmarPago = () => {
 
             <div className="lg:col-span-1">
               <div className="bg-card p-6 rounded-lg shadow-sm sticky top-4">
-                <h2 className="font-heading text-lg text-foreground mb-4">Order Summary</h2>
+                <h2 className="font-heading text-lg text-foreground mb-4">Resumen de compra</h2>
                 <div className="space-y-2">
                   <div className="flex justify-between text-accent">
-                    <span>Items ({cartItems.length})</span>
-                    <span>${carrito.precio_total}</span>
+                    <span>Libros ({cartItems.length})</span>
+                    <span>{carrito.precio_total} Bs</span>
                   </div>
                   <div className="flex justify-between text-accent">
-                    <span>Shipping</span>
-                    <span>Free</span>
+                    <span>Envio</span>
+                    <span>Gratis</span>
                   </div>
                   <div className="border-t border-border pt-2 mt-2">
                     <div className="flex justify-between font-heading text-lg text-foreground">
                       <span>Total</span>
-                      <span>${carrito.precio_total}</span>
+                      <span>{carrito.precio_total} Bs</span>
                     </div>
                   </div>
                 </div>
@@ -195,7 +195,7 @@ const confirmarPago = () => {
 
       <div className="mb-4">
         <p className="text-accent-foreground mb-2">Monto total a pagar:</p>
-        <p className="text-foreground font-bold text-lg">${carrito.precio_total}</p>
+        <p className="text-foreground font-bold text-lg">{carrito.precio_total} Bs</p>
       </div>
 
       <div className="mb-4">
