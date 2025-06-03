@@ -27,7 +27,7 @@ export const Main = () => {
   const getLibroList = async () => {
     try {
       const librosResponse = await new LibroService().getLibros();
-      setLibros(librosResponse);
+      setLibros(librosResponse.slice(0, 10));
       console.log("Libros fetched successfully:", librosResponse);
     } catch (error) {
       console.error("Error fetching libros:", error);

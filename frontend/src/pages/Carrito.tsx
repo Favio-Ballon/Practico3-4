@@ -110,13 +110,9 @@ const confirmarPago = () => {
                 <div key={item.id} className="bg-card p-6 rounded-lg shadow-sm mb-4 flex flex-col sm:flex-row items-center gap-4">
                   <div className="w-20 h-32 flex-shrink-0">
                     <img
-                      src={item.imagen}
+                      src={"http://localhost:8000"+item.imagen}
                       alt={item.titulo}
                       className="w-full h-full object-cover rounded-md"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src =
-                          "https://images.unsplash.com/photo-1543002588-bfa74002ed7e";
-                      }}
                     />
                   </div>
                   <div className="flex-grow">
